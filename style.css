@@ -1,0 +1,655 @@
+/* Reset & dasar */
+* {
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+}
+
+header,
+footer {
+    display: none;
+}
+
+/* Main content - batas atas & bawah mengikuti layar, proporsional */
+main {
+    flex: 1;
+    min-height: 0;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    padding: 0;
+    overflow: hidden;
+}
+
+section {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+/* Video container - pusatkan scale-canvas */
+.video-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+}
+
+/* Scale canvas - ukuran tetap 320x480, diskalakan seragam oleh JS */
+.scale-canvas {
+    width: 320px;
+    height: 480px;
+    transform-origin: center center;
+    flex-shrink: 0;
+}
+
+.scale-canvas .video-wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+.video-container video {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 320 / 480;
+    object-fit: contain;
+    display: block;
+}
+
+/* Video wrapper - isi canvas 320x480 */
+.video-wrapper {
+    position: relative;
+    display: block;
+}
+
+/* Progress bar di atas video - mengikuti lebar video */
+.progress-bar-story {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 0 0 2px 2px;
+    overflow: hidden;
+    z-index: 2;
+}
+
+.progress-bar-story .progress-buffered,
+.progress-bar-story .progress-current {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    border-radius: 0;
+    pointer-events: none;
+}
+
+.progress-bar-story .progress-buffered {
+    background: rgba(255, 255, 255, 0.5);
+    width: 0%;
+}
+
+.progress-bar-story .progress-current {
+    background: #fff;
+    width: 0%;
+}
+
+.progress-bar-story .progress-input {
+    position: absolute;
+    top: -8px;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+/* Tombol play - overlay di tengah video */
+.btn-play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    transition: opacity 0.3s, transform 0.2s;
+}
+
+.btn-play-overlay {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.btn-play-overlay:hover {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.btn-play-overlay.playing {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.video-wrapper:hover .btn-play-overlay.playing {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Tombol suara - pojok kiri bawah video */
+.btn-sound {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.btn-sound:hover {
+    background: rgba(0, 0, 0, 0.7);
+    transform: scale(1.05);
+}
+
+.btn-sound svg {
+    width: 22px;
+    height: 22px;
+}
+
+.btn-sound .icon-sound-off {
+    display: none;
+}
+
+.btn-sound.muted .icon-sound-on {
+    display: none;
+}
+
+.btn-sound.muted .icon-sound-off {
+    display: block;
+}
+
+/* Time display - overlay di pojok bawah video */
+.time-display-overlay {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    padding: 4px 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #fff;
+    z-index: 2;
+}
+
+/* Tombol play/pause */
+.btn-play {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-play:hover {
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.4);
+}
+
+.btn-play-overlay:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+}
+
+.btn-play:active {
+    transform: scale(0.98);
+}
+
+.btn-play-overlay:active {
+    transform: translate(-50%, -50%) scale(0.98);
+}
+
+.btn-play svg {
+    width: 24px;
+    height: 24px;
+}
+
+.btn-play .icon-pause {
+    display: none;
+}
+
+.btn-play.playing .icon-play {
+    display: none;
+}
+
+.btn-play.playing .icon-pause {
+    display: block;
+}
+
+
+/* Time display */
+.time-display {
+    flex-shrink: 0;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    min-width: 4.5rem;
+}
+
+/* Overlay saat video selesai */
+.video-end-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-y: auto;
+    background: #000;
+    z-index: 3;
+}
+
+.video-end-overlay.visible {
+    display: flex;
+}
+
+.video-end-overlay .end-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.video-end-overlay .end-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Logo di kiri atas - tampil saat BG_2.jpg */
+.video-end-overlay .end-logo {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 120px;
+    height: auto;
+    display: none;
+    z-index: 2;
+}
+
+.video-end-overlay .end-logo.visible {
+    display: block;
+}
+
+/* 8 kartu - 4 atas 4 bawah, di tengah (tampil saat BG_2.jpg) */
+.video-end-overlay .card-grid {
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    grid-template-columns: repeat(4, 70px);
+    gap: 10px;
+}
+
+.video-end-overlay .card-grid.visible {
+    display: grid;
+}
+
+.video-end-overlay .card-item {
+    width: 70px;
+    height: auto;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.2s, filter 0.2s;
+}
+
+.video-end-overlay .card-item:hover {
+    transform: scale(1.08);
+    filter: brightness(1.15);
+}
+
+.video-end-overlay .card-item[data-revealed="true"] {
+    pointer-events: none;
+}
+
+/* Oops overlay - peringatan pilih lebih dari 1 kartu */
+.video-end-overlay .oops-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 5;
+}
+
+.video-end-overlay .oops-overlay.visible {
+    display: flex;
+}
+
+.video-end-overlay .oops-overlay .oops-image {
+    max-width: 85%;
+    max-height: 70%;
+    object-fit: contain;
+}
+
+.video-end-overlay .oops-overlay .oops-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.video-end-overlay .oops-overlay .oops-close img {
+    width: 44px;
+    height: auto;
+    display: block;
+}
+
+/* Pengingat countdown sebelum pindah ke KS + belanja */
+.video-end-overlay .countdown-reminder {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 28px;
+    background: linear-gradient(135deg, rgba(46, 125, 50, 0.95) 0%, rgba(27, 94, 32, 0.95) 100%);
+    border-radius: 16px;
+    color: #fff;
+    font-size: 0.85rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    z-index: 4;
+}
+
+.video-end-overlay .countdown-reminder.visible {
+    display: flex;
+    animation: countdownAppear 0.3s ease-out;
+}
+
+@keyframes countdownAppear {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.video-end-overlay .countdown-reminder .countdown-text {
+    opacity: 0.95;
+    text-align: center;
+}
+
+.video-end-overlay .countdown-reminder .countdown-value {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.video-end-overlay .countdown-reminder .countdown-unit {
+    font-size: 1rem;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.video-end-overlay .countdown-reminder .countdown-number {
+    font-weight: 800;
+    font-size: 2.5rem;
+    min-width: 1.2em;
+    text-align: center;
+    line-height: 1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    animation: countdownPulse 1s ease-in-out infinite;
+}
+
+@keyframes countdownPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.08);
+    }
+}
+
+/* Place Info overlay */
+.video-end-overlay .place-info-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 5;
+}
+
+.video-end-overlay .place-info-overlay.visible {
+    display: flex;
+}
+
+.video-end-overlay .place-info-overlay .place-info-modal {
+    position: relative;
+    width: 90%;
+    max-width: 280px;
+    min-height: 360px;
+    max-height: 85%;
+    background: url(assets/Place_Info.png) center / contain no-repeat;
+    padding: 12px 14px 16px 8px;
+    overflow-y: auto;
+}
+
+.video-end-overlay .place-info-overlay .place-info-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.video-end-overlay .place-info-overlay .place-info-close img {
+    width: 36px;
+    height: auto;
+    display: block;
+}
+
+.video-end-overlay .place-info-overlay .place-info-content {
+    padding-top: 100px;
+    padding-left: 30px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    text-align: left;
+}
+
+.video-end-overlay .place-info-overlay .place-info-title {
+    margin: 0 0 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #0c4a6e;
+    text-align: left;
+}
+
+.video-end-overlay .place-info-overlay .place-info-steps {
+    margin: 0;
+    padding-left: 14px;
+    font-size: 0.65rem;
+    line-height: 1.35;
+    color: #334155;
+}
+
+.video-end-overlay .place-info-overlay .place-info-steps li {
+    margin-bottom: 2px;
+}
+
+.video-end-overlay .place-info-overlay .place-info-steps li:last-child {
+    margin-bottom: 0;
+}
+
+.video-end-overlay .end-buttons {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px 12px;
+    width: 100%;
+}
+
+.video-end-overlay .btn-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+}
+
+.video-end-overlay .btn-instruksi {
+    max-width: 78%;
+}
+
+.video-end-overlay .btn-info-lengkap {
+    display: none;
+    max-width: 140px;
+}
+
+.video-end-overlay .btn-info-lengkap.visible {
+    display: flex;
+    align-self: center;
+}
+
+.video-end-overlay .btn-belanja {
+    display: none;
+    text-decoration: none;
+    max-width: 220px;
+    margin-bottom: 40px;
+}
+
+.video-end-overlay .btn-belanja.visible {
+    display: flex;
+    align-self: center;
+}
+
+.video-end-overlay .btn-info,
+.video-end-overlay .btn-main {
+    max-width: 140px;
+}
+
+.video-end-overlay .btn-action {
+    flex-shrink: 0;
+    width: auto;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.video-end-overlay .btn-action:hover {
+    transform: scale(1.03);
+}
+
+.video-end-overlay .btn-action:active {
+    transform: scale(0.98);
+}
+
+.video-end-overlay .btn-action img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.video-end-overlay .btn-kembali {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 4;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+/* Sembunyikan tombol kembali saat sesi BG_2 (pilih kartu) */
+.video-end-overlay.session-bg2 .btn-kembali {
+    display: none !important;
+    pointer-events: none;
+}
+
+.video-end-overlay .btn-kembali:hover {
+    transform: scale(1.08);
+}
+
+.video-end-overlay .btn-kembali:active {
+    transform: scale(0.95);
+}
+
+.video-end-overlay .btn-kembali img {
+    width: 44px;
+    height: auto;
+    display: block;
+}
