@@ -9,6 +9,47 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+
+    <script>
+        /* ============================================================
+           LANDING PAGE URL — ubah di sini jika URL berubah di masa mendatang
+           ============================================================ */
+        var LANDING_URL = "https://www.kidzstation.co.id/collections/lego-playground?utm_source=Gamification&utm_medium=cpm&utm_campaign=P3_Brand_Traffic_Gamification_LEGO-KS_AON_June2026&utm_term=Core_All_24-55_LEGO-KS_AON_June2026";
+
+        function goToLanding() {
+            window.open(LANDING_URL, "_blank", "noopener,noreferrer");
+        }
+    </script>
+
+    <style>
+        /* ============================================================
+           Area transparan yang menutupi video saat diputar.
+           Klik di mana saja pada video → landing page.
+           Tombol play/pause dan sound tetap bisa diklik karena
+           pointer-events-nya diset di atas layer ini (z-index lebih tinggi).
+           ============================================================ */
+        #videoClickArea {
+            position: absolute;
+            inset: 0;
+            z-index: 5;          /* di atas video (z-index 1), di bawah btnPlay/btnSound */
+            cursor: pointer;
+            background: transparent;
+        }
+
+        /* ============================================================
+           Area transparan di atas end-image-wrapper saat fase KS.jpg
+           (setelah video selesai, sebelum & sesudah game).
+           Menutupi seluruh area end-image kecuali tombol-tombol aktif.
+           ============================================================ */
+        #endClickArea {
+            position: absolute;
+            inset: 0;
+            z-index: 1;          /* di bawah semua tombol & card-grid */
+            cursor: pointer;
+            background: transparent;
+            display: none;       /* muncul hanya saat videoEndOverlay visible */
+        }
+    </style>
 </head>
 
 <body>
@@ -29,11 +70,23 @@
                             <input type="range" class="progress-input" min="0" max="100" value="0"
                                 aria-label="Geser progress video">
                         </div>
+
                         <video id="videoPlayer" playsinline autoplay muted>
                             <source src="assets/video1.mp4" type="video/mp4">
                             Browser Anda tidak mendukung pemutaran video.
                         </video>
-                        <button type="button" class="btn-play btn-play-overlay" id="btnPlay" aria-label="Putar/Jeda">
+
+                        <!-- ============================================================
+                             LAYER KLIK VIDEO
+                             Menutupi area video — klik mana saja → landing page.
+                             btnPlay dan btnSound punya z-index lebih tinggi sehingga
+                             klik pada tombol-tombol itu TIDAK melewati layer ini.
+                             ============================================================ -->
+                        <div id="videoClickArea" onclick="goToLanding()" aria-label="Kunjungi landing page"></div>
+
+                        <!-- z-index btnPlay & btnSound harus > 5 (videoClickArea) agar bisa diklik -->
+                        <button type="button" class="btn-play btn-play-overlay" id="btnPlay" aria-label="Putar/Jeda"
+                           >
                             <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M8 5v14l11-7z" />
                             </svg>
@@ -41,7 +94,8 @@
                                 <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
                             </svg>
                         </button>
-                        <button type="button" class="btn-sound" id="btnSound" aria-label="Suara">
+                        <button type="button" class="btn-sound" id="btnSound" aria-label="Suara"
+                           >
                             <svg class="icon-sound-on" viewBox="0 0 24 24" fill="currentColor">
                                 <path
                                     d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
@@ -51,29 +105,46 @@
                                     d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
                             </svg>
                         </button>
+
                         <div class="video-end-overlay" id="videoEndOverlay">
                             <button type="button" class="btn-kembali" id="btnReplay"
-                                aria-label="Kembali / Putar ulang video">
+                                aria-label="Kembali / Putar ulang video"
+                               >
                                 <img src="assets/btn_kembali.png" alt="Kembali">
                             </button>
                             <div class="end-image-wrapper">
+
+                                <!-- ============================================================
+                                     LAYER KLIK AREA KOSONG (fase KS.jpg / BG_2 / ending)
+                                     z-index: 1 — di bawah semua tombol & card-grid.
+                                     Script.js meng-toggle display-nya sesuai state banner.
+                                     Klik area kosong (bukan tombol/kartu) → landing page.
+                                     ============================================================ -->
+                                <div id="endClickArea" onclick="goToLanding()"
+                                    aria-label="Kunjungi landing page"></div>
+
                                 <img src="assets/KS.jpg" alt="Kidzstation" class="end-image">
                                 <img src="assets/LOGO.png" alt="Kidzstation Logo" class="end-logo" id="endLogo">
+
                                 <div class="oops-overlay" id="oopsOverlay">
                                     <img src="assets/oops.png" alt="Oops!" class="oops-image">
-                                    <button type="button" class="oops-close" id="oopsClose" aria-label="Tutup">
+                                    <button type="button" class="oops-close" id="oopsClose" aria-label="Tutup"
+                                       >
                                         <img src="assets/btn_close.png" alt="Tutup">
                                     </button>
                                 </div>
+
                                 <!-- <div class="countdown-reminder" id="countdownReminder">
                                 <div class="countdown-value">
                                     <span class="countdown-number" id="countdownNumber">5</span>
                                 </div>
                             </div> -->
+
                                 <div class="place-info-overlay" id="placeInfoOverlay">
                                     <div class="place-info-modal">
                                         <button type="button" class="place-info-close" id="placeInfoClose"
-                                            aria-label="Tutup">
+                                            aria-label="Tutup"
+                                           >
                                             <img src="assets/btn_close.png" alt="Tutup">
                                         </button>
                                         <div class="place-info-content">
@@ -87,6 +158,8 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- card-grid: z-index dari CSS (harus > endClickArea=1) -->
                                 <div class="card-grid" id="cardGrid">
                                     <img src="assets/card_default.png" alt="Kartu" class="card-item"
                                         data-revealed="false">
@@ -105,20 +178,29 @@
                                     <img src="assets/card_default.png" alt="Kartu" class="card-item"
                                         data-revealed="false">
                                 </div>
+
                                 <div class="end-buttons">
                                     <button type="button" class="btn-action btn-instruksi" id="btnInstruksi"
-                                        aria-label="Instruksi">
+                                        aria-label="Instruksi"
+                                       >
                                         <img src="assets/instruksi.png" alt="Tap pada kartu untuk cocokkan gambar">
                                     </button>
                                     <button type="button" class="btn-action btn-info-lengkap" id="btnInfoLengkap"
-                                        aria-label="Info lengkap">
+                                        aria-label="Info lengkap"
+                                       >
                                         <img src="assets/info_lengkap.png" alt="Info lengkap">
                                     </button>
-                                    <a href="https://www.legostoreindonesia.co.id/pages/lego-playground?utm_source=Gamification&utm_medium=cpm&utm_campaign=P3_Brand_Traffic_Gamification_LEGO-KS_AON_June2026&utm_term=Core_All_24-55_LEGO-KS_AON_June2026"
+
+                                    <!-- ============================================================
+                                         TOMBOL BELANJA — URL landing page diperbarui ke kidzstation
+                                         ============================================================ -->
+                                    <a href="https://www.kidzstation.co.id/collections/lego-playground?utm_source=Gamification&utm_medium=cpm&utm_campaign=P3_Brand_Traffic_Gamification_LEGO-KS_AON_June2026&utm_term=Core_All_24-55_LEGO-KS_AON_June2026"
                                         target="_blank" rel="noopener noreferrer" class="btn-action btn-belanja"
-                                        id="btnBelanja" aria-label="Belanja">
+                                        id="btnBelanja" aria-label="Belanja"
+                                       >
                                         <img src="assets/btn_belanja2.png" alt="Belanja">
                                     </a>
+
                                     <div class="btn-row">
                                         <button type="button" class="btn-action btn-info" id="btnInfo"
                                             aria-label="Info lengkap">
@@ -130,8 +212,10 @@
                                         </button>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -143,6 +227,36 @@
     </footer>
 
     <script src="script.js"></script>
+
+    <script>
+        /* ============================================================
+           TOGGLE endClickArea
+           Tampilkan layer klik area kosong saat videoEndOverlay visible,
+           sembunyikan saat video sedang diputar.
+           Menggunakan MutationObserver agar sinkron dengan logic script.js.
+           ============================================================ */
+        (function () {
+            var endOverlay = document.getElementById('videoEndOverlay');
+            var endClickArea = document.getElementById('endClickArea');
+            var videoClickArea = document.getElementById('videoClickArea');
+
+            if (!endOverlay || !endClickArea || !videoClickArea) return;
+
+            var observer = new MutationObserver(function () {
+                var isEndVisible = endOverlay.classList.contains('visible');
+                // Saat overlay end aktif → tampilkan endClickArea, sembunyikan videoClickArea
+                endClickArea.style.display = isEndVisible ? 'block' : 'none';
+                videoClickArea.style.display = isEndVisible ? 'none' : 'block';
+            });
+
+            observer.observe(endOverlay, { attributes: true, attributeFilter: ['class'] });
+
+            // Inisialisasi awal: video sedang diputar → videoClickArea aktif
+            endClickArea.style.display = 'none';
+            videoClickArea.style.display = 'block';
+        })();
+    </script>
+
 </body>
 
 </html>
